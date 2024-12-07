@@ -13,3 +13,7 @@ keywords = ["tuple", "traits"]
 categories = ["data-structures"]
 
 [dependencies]
+
+[features]
+std = []
+default = ["std"]

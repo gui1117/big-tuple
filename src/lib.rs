@@ -1,3 +1,5 @@
+#![no_std]
+
 /// A wrapper of tuple that implement `PartialEq`, `Eq`, `PartialOrd`, `Ord`, `Debug`, `Default`,
 /// `Hash` for tuple of up to 128 elements.
 #[derive(Clone, Copy)]
@@ -5,6 +7,12 @@ pub struct BigTuple<T>(pub T);
 
 macro_rules! impl_big_tuple {
 	($($name:ident $other_name:ident),*) => {
+		impl<$($name),*> From<($($name,)*)> for BigTuple<($($name,)*)> {
+			fn from(tuple: ($($name,)*)) -> Self {
+				BigTuple(tuple)
+			}
+		}
+
 		#[allow(non_snake_case)]
 		impl<$($name: PartialEq),*> PartialEq for BigTuple<($($name,)*)> {
 			fn eq(&self, other: &Self) -> bool {
@@ -20,14 +28,14 @@ macro_rules! impl_big_tuple {
 
 		#[allow(non_snake_case)]
 		impl<$($name: PartialOrd),*> PartialOrd for BigTuple<($($name,)*)> {
-			fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+			fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
 				let BigTuple(($(ref $name,)*)) = self;
 				let BigTuple(($(ref $other_name,)*)) = other;
 
 				#[allow(unused_mut)]
-				let mut result = std::cmp::Ordering::Equal;
+				let mut result = core::cmp::Ordering::Equal;
 				$(
-					if result == std::cmp::Ordering::Equal {
+					if result == core::cmp::Ordering::Equal {
 						result = $name.partial_cmp($other_name)?;
 					}
 				)*
@@ -40,14 +48,14 @@ macro_rules! impl_big_tuple {
 		impl<$($name),*> Ord for BigTuple<($($name,)*)>
 			where $($name: Ord),*
 		{
-			fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+			fn cmp(&self, other: &Self) -> core::cmp::Ordering {
 				let BigTuple(($(ref $name,)*)) = self;
 				let BigTuple(($(ref $other_name,)*)) = other;
 
 				#[allow(unused_mut)]
-				let mut result = std::cmp::Ordering::Equal;
+				let mut result = core::cmp::Ordering::Equal;
 				$(
-					if result == std::cmp::Ordering::Equal {
+					if result == core::cmp::Ordering::Equal {
 						result = $name.cmp($other_name);
 					}
 				)*
@@ -57,8 +65,8 @@ macro_rules! impl_big_tuple {
 		}
 
 		#[allow(non_snake_case)]
-		impl<$($name: std::fmt::Debug),*> std::fmt::Debug for BigTuple<($($name,)*)> {
-			fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		impl<$($name: core::fmt::Debug),*> core::fmt::Debug for BigTuple<($($name,)*)> {
+			fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
 				let BigTuple(($(ref $name,)*)) = self;
 				f.debug_tuple("BigTuple")
 					$(
@@ -76,9 +84,9 @@ macro_rules! impl_big_tuple {
 		}
 
 		#[allow(non_snake_case)]
-		impl<$($name: std::hash::Hash),*> std::hash::Hash for BigTuple<($($name,)*)> {
+		impl<$($name: core::hash::Hash),*> core::hash::Hash for BigTuple<($($name,)*)> {
 			#[allow(unused_variables)]
-			fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+			fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
 				let BigTuple(($($name,)*)) = self;
 				$(
 					$name.hash(state);
@@ -217,3 +225,350 @@ impl_big_tuple!(A1 B1, A2 B2, A3 B3, A4 B4, A5 B5, A6 B6, A7 B7, A8 B8, A9 B9, A
 impl_big_tuple!(A1 B1, A2 B2, A3 B3, A4 B4, A5 B5, A6 B6, A7 B7, A8 B8, A9 B9, A10 B10, A11 B11, A12 B12, A13 B13, A14 B14, A15 B15, A16 B16, A17 B17, A18 B18, A19 B19, A20 B20, A21 B21, A22 B22, A23 B23, A24 B24, A25 B25, A26 B26, A27 B27, A28 B28, A29 B29, A30 B30, A31 B31, A32 B32, A33 B33, A34 B34, A35 B35, A36 B36, A37 B37, A38 B38, A39 B39, A40 B40, A41 B41, A42 B42, A43 B43, A44 B44, A45 B45, A46 B46, A47 B47, A48 B48, A49 B49, A50 B50, A51 B51, A52 B52, A53 B53, A54 B54, A55 B55, A56 B56, A57 B57, A58 B58, A59 B59, A60 B60, A61 B61, A62 B62, A63 B63, A64 B64, A65 B65, A66 B66, A67 B67, A68 B68, A69 B69, A70 B70, A71 B71, A72 B72, A73 B73, A74 B74, A75 B75, A76 B76, A77 B77, A78 B78, A79 B79, A80 B80, A81 B81, A82 B82, A83 B83, A84 B84, A85 B85, A86 B86, A87 B87, A88 B88, A89 B89, A90 B90, A91 B91, A92 B92, A93 B93, A94 B94, A95 B95, A96 B96, A97 B97, A98 B98, A99 B99, A100 B100, A101 B101, A102 B102, A103 B103, A104 B104, A105 B105, A106 B106, A107 B107, A108 B108, A109 B109, A110 B110, A111 B111, A112 B112, A113 B113, A114 B114, A115 B115, A116 B116, A117 B117, A118 B118, A119 B119, A120 B120, A121 B121, A122 B122, A123 B123, A124 B124, A125 B125, A126 B126);
 impl_big_tuple!(A1 B1, A2 B2, A3 B3, A4 B4, A5 B5, A6 B6, A7 B7, A8 B8, A9 B9, A10 B10, A11 B11, A12 B12, A13 B13, A14 B14, A15 B15, A16 B16, A17 B17, A18 B18, A19 B19, A20 B20, A21 B21, A22 B22, A23 B23, A24 B24, A25 B25, A26 B26, A27 B27, A28 B28, A29 B29, A30 B30, A31 B31, A32 B32, A33 B33, A34 B34, A35 B35, A36 B36, A37 B37, A38 B38, A39 B39, A40 B40, A41 B41, A42 B42, A43 B43, A44 B44, A45 B45, A46 B46, A47 B47, A48 B48, A49 B49, A50 B50, A51 B51, A52 B52, A53 B53, A54 B54, A55 B55, A56 B56, A57 B57, A58 B58, A59 B59, A60 B60, A61 B61, A62 B62, A63 B63, A64 B64, A65 B65, A66 B66, A67 B67, A68 B68, A69 B69, A70 B70, A71 B71, A72 B72, A73 B73, A74 B74, A75 B75, A76 B76, A77 B77, A78 B78, A79 B79, A80 B80, A81 B81, A82 B82, A83 B83, A84 B84, A85 B85, A86 B86, A87 B87, A88 B88, A89 B89, A90 B90, A91 B91, A92 B92, A93 B93, A94 B94, A95 B95, A96 B96, A97 B97, A98 B98, A99 B99, A100 B100, A101 B101, A102 B102, A103 B103, A104 B104, A105 B105, A106 B106, A107 B107, A108 B108, A109 B109, A110 B110, A111 B111, A112 B112, A113 B113, A114 B114, A115 B115, A116 B116, A117 B117, A118 B118, A119 B119, A120 B120, A121 B121, A122 B122, A123 B123, A124 B124, A125 B125, A126 B126, A127 B127);
 impl_big_tuple!(A1 B1, A2 B2, A3 B3, A4 B4, A5 B5, A6 B6, A7 B7, A8 B8, A9 B9, A10 B10, A11 B11, A12 B12, A13 B13, A14 B14, A15 B15, A16 B16, A17 B17, A18 B18, A19 B19, A20 B20, A21 B21, A22 B22, A23 B23, A24 B24, A25 B25, A26 B26, A27 B27, A28 B28, A29 B29, A30 B30, A31 B31, A32 B32, A33 B33, A34 B34, A35 B35, A36 B36, A37 B37, A38 B38, A39 B39, A40 B40, A41 B41, A42 B42, A43 B43, A44 B44, A45 B45, A46 B46, A47 B47, A48 B48, A49 B49, A50 B50, A51 B51, A52 B52, A53 B53, A54 B54, A55 B55, A56 B56, A57 B57, A58 B58, A59 B59, A60 B60, A61 B61, A62 B62, A63 B63, A64 B64, A65 B65, A66 B66, A67 B67, A68 B68, A69 B69, A70 B70, A71 B71, A72 B72, A73 B73, A74 B74, A75 B75, A76 B76, A77 B77, A78 B78, A79 B79, A80 B80, A81 B81, A82 B82, A83 B83, A84 B84, A85 B85, A86 B86, A87 B87, A88 B88, A89 B89, A90 B90, A91 B91, A92 B92, A93 B93, A94 B94, A95 B95, A96 B96, A97 B97, A98 B98, A99 B99, A100 B100, A101 B101, A102 B102, A103 B103, A104 B104, A105 B105, A106 B106, A107 B107, A108 B108, A109 B109, A110 B110, A111 B111, A112 B112, A113 B113, A114 B114, A115 B115, A116 B116, A117 B117, A118 B118, A119 B119, A120 B120, A121 B121, A122 B122, A123 B123, A124 B124, A125 B125, A126 B126, A127 B127, A128 B128);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::cmp::Ordering;
+    use std::collections::hash_map::DefaultHasher;
+    use std::hash::{Hash, Hasher};
+
+    #[test]
+    fn test_partial_eq_empty() {
+        let t1 = BigTuple(());
+        let t2 = BigTuple(());
+        assert_eq!(t1, t2);
+    }
+
+    #[test]
+    fn test_partial_eq_single_element() {
+        let t1 = BigTuple((1,));
+        let t2 = BigTuple((1,));
+        let t3 = BigTuple((2,));
+        assert_eq!(t1, t2);
+        assert_ne!(t1, t3);
+    }
+
+    #[test]
+    fn test_partial_eq_multiple_elements() {
+        let t1 = BigTuple((1, 2, 3));
+        let t2 = BigTuple((1, 2, 3));
+        let t3 = BigTuple((3, 2, 1));
+        assert_eq!(t1, t2);
+        assert_ne!(t1, t3);
+    }
+
+    #[test]
+    fn test_partial_eq_large_tuple() {
+        let t1 = BigTuple((1, 2, 3, 4, 5, 6, 7, 8));
+        let t2 = BigTuple((1, 2, 3, 4, 5, 6, 7, 8));
+        let t3 = BigTuple((8, 7, 6, 5, 4, 3, 2, 1));
+        assert_eq!(t1, t2);
+        assert_ne!(t1, t3);
+    }
+
+    #[test]
+    fn test_partial_eq_mixed_types() {
+        let t1 = BigTuple((1, "hello", 3.14));
+        let t2 = BigTuple((1, "hello", 3.14));
+        let t3 = BigTuple((1, "world", 3.14));
+        assert_eq!(t1, t2);
+        assert_ne!(t1, t3);
+    }
+
+    #[test]
+    fn test_partial_eq_with_nested_big_tuple() {
+        let t1 = BigTuple((BigTuple((1, 2)), 3));
+        let t2 = BigTuple((BigTuple((1, 2)), 3));
+        let t3 = BigTuple((BigTuple((2, 1)), 3));
+        assert_eq!(t1, t2);
+        assert_ne!(t1, t3);
+    }
+
+    #[test]
+    fn test_partial_ord_empty() {
+        let t1 = BigTuple(());
+        let t2 = BigTuple(());
+        assert_eq!(t1.partial_cmp(&t2), Some(Ordering::Equal));
+    }
+
+    #[test]
+    fn test_partial_ord_single_element() {
+        let t1 = BigTuple((1,));
+        let t2 = BigTuple((2,));
+        let t3 = BigTuple((1,));
+        assert_eq!(t1.partial_cmp(&t2), Some(Ordering::Less));
+        assert_eq!(t2.partial_cmp(&t1), Some(Ordering::Greater));
+        assert_eq!(t1.partial_cmp(&t3), Some(Ordering::Equal));
+    }
+
+    #[test]
+    fn test_partial_ord_multiple_elements() {
+        let t1 = BigTuple((1, 2, 3));
+        let t2 = BigTuple((1, 2, 4));
+        let t3 = BigTuple((1, 3, 0));
+        let t4 = BigTuple((0, 9, 9));
+        assert_eq!(t1.partial_cmp(&t2), Some(Ordering::Less));
+        assert_eq!(t2.partial_cmp(&t1), Some(Ordering::Greater));
+        assert_eq!(t1.partial_cmp(&t3), Some(Ordering::Less));
+        assert_eq!(t1.partial_cmp(&t4), Some(Ordering::Greater));
+    }
+
+    #[test]
+    fn test_partial_ord_large_tuple() {
+        let t1 = BigTuple((1, 2, 3, 4, 5, 6, 7, 8));
+        let t2 = BigTuple((1, 2, 3, 4, 5, 6, 7, 9));
+        assert_eq!(t1.partial_cmp(&t2), Some(Ordering::Less));
+        assert_eq!(t2.partial_cmp(&t1), Some(Ordering::Greater));
+        assert_eq!(t1.partial_cmp(&t1), Some(Ordering::Equal));
+    }
+
+    #[test]
+    fn test_partial_ord_with_mixed_types() {
+        let t1 = BigTuple((1, "hello", 3.14));
+        let t2 = BigTuple((1, "world", 3.14));
+        assert_eq!(t1.partial_cmp(&t2), Some(Ordering::Less));
+    }
+
+    #[test]
+    fn test_partial_ord_nested_big_tuple() {
+        let t1 = BigTuple((BigTuple((1, 2)), 3));
+        let t2 = BigTuple((BigTuple((1, 3)), 3));
+        let t3 = BigTuple((BigTuple((1, 2)), 4));
+        assert_eq!(t1.partial_cmp(&t2), Some(Ordering::Less));
+        assert_eq!(t2.partial_cmp(&t1), Some(Ordering::Greater));
+        assert_eq!(t1.partial_cmp(&t3), Some(Ordering::Less));
+    }
+
+    #[test]
+    fn test_ord_empty() {
+        let t1 = BigTuple(());
+        let t2 = BigTuple(());
+        assert_eq!(t1.cmp(&t2), Ordering::Equal);
+    }
+
+    #[test]
+    fn test_ord_single_element() {
+        let t1 = BigTuple((1,));
+        let t2 = BigTuple((2,));
+        let t3 = BigTuple((1,));
+        assert_eq!(t1.cmp(&t2), Ordering::Less);
+        assert_eq!(t2.cmp(&t1), Ordering::Greater);
+        assert_eq!(t1.cmp(&t3), Ordering::Equal);
+    }
+
+    #[test]
+    fn test_ord_multiple_elements() {
+        let t1 = BigTuple((1, 2, 3));
+        let t2 = BigTuple((1, 2, 4));
+        let t3 = BigTuple((1, 3, 0));
+        let t4 = BigTuple((0, 9, 9));
+        assert_eq!(t1.cmp(&t2), Ordering::Less);
+        assert_eq!(t2.cmp(&t1), Ordering::Greater);
+        assert_eq!(t1.cmp(&t3), Ordering::Less);
+        assert_eq!(t1.cmp(&t4), Ordering::Greater);
+    }
+
+    #[test]
+    fn test_ord_large_tuple() {
+        let t1 = BigTuple((1, 2, 3, 4, 5, 6, 7, 8));
+        let t2 = BigTuple((1, 2, 3, 4, 5, 6, 7, 9));
+        assert_eq!(t1.cmp(&t2), Ordering::Less);
+        assert_eq!(t2.cmp(&t1), Ordering::Greater);
+        assert_eq!(t1.cmp(&t1), Ordering::Equal);
+    }
+
+    #[test]
+    fn test_ord_nested_big_tuple() {
+        let t1 = BigTuple((BigTuple((1, 2)), 3));
+        let t2 = BigTuple((BigTuple((1, 3)), 3));
+        let t3 = BigTuple((BigTuple((1, 2)), 4));
+        assert_eq!(t1.cmp(&t2), Ordering::Less);
+        assert_eq!(t2.cmp(&t1), Ordering::Greater);
+        assert_eq!(t1.cmp(&t3), Ordering::Less);
+    }
+
+    #[test]
+    fn test_default_empty() {
+        let t: BigTuple<()> = Default::default();
+        assert_eq!(t, BigTuple(()));
+    }
+
+    #[test]
+    fn test_default_single_element() {
+        let t: BigTuple<(i32,)> = Default::default();
+        assert_eq!(t, BigTuple((0,))); // Default for i32 is 0
+    }
+
+    #[test]
+    fn test_default_multiple_elements() {
+        let t: BigTuple<(i32, f64, bool)> = Default::default();
+        assert_eq!(t, BigTuple((0, 0.0, false))); // Defaults for i32, f64, and bool
+    }
+
+    #[test]
+    fn test_default_large_tuple() {
+        let t: BigTuple<(i32, i32, i32, i32, i32, i32, i32, i32)> = Default::default();
+        assert_eq!(t, BigTuple((0, 0, 0, 0, 0, 0, 0, 0))); // All i32s default to 0
+    }
+
+    #[test]
+    fn test_default_nested_big_tuple() {
+        let t: BigTuple<(BigTuple<(i32, bool)>, f64)> = Default::default();
+        assert_eq!(t, BigTuple((BigTuple((0, false)), 0.0))); // Nested default values
+    }
+
+    #[test]
+    fn test_default_with_custom_types() {
+        #[derive(Debug, PartialEq, Default)]
+        struct CustomType {
+            value: i32,
+        }
+
+        let t: BigTuple<(CustomType,)> = Default::default();
+        assert_eq!(t, BigTuple((CustomType { value: 0 },))); // Default for CustomType
+    }
+
+    #[test]
+    fn test_debug_empty() {
+        let t = BigTuple(());
+        assert_eq!(format!("{:?}", t), "BigTuple");
+    }
+
+    #[test]
+    fn test_debug_single_element() {
+        let t = BigTuple((42,));
+        assert_eq!(format!("{:?}", t), "BigTuple(42)");
+    }
+
+    #[test]
+    fn test_debug_multiple_elements() {
+        let t = BigTuple((1, "hello", 3.14));
+        assert_eq!(format!("{:?}", t), r#"BigTuple(1, "hello", 3.14)"#);
+    }
+
+    #[test]
+    fn test_debug_large_tuple() {
+        let t = BigTuple((1, 2, 3, 4, 5, 6, 7, 8));
+        assert_eq!(format!("{:?}", t), "BigTuple(1, 2, 3, 4, 5, 6, 7, 8)");
+    }
+
+    #[test]
+    fn test_debug_nested_big_tuple() {
+        let t = BigTuple((BigTuple((1, 2)), "nested"));
+        assert_eq!(format!("{:?}", t), r#"BigTuple(BigTuple(1, 2), "nested")"#);
+    }
+
+    #[test]
+    fn test_debug_custom_type() {
+        #[derive(Debug)]
+        struct CustomType {
+            _value: i32,
+        }
+
+        let t = BigTuple((CustomType { _value: 42 },));
+        assert_eq!(format!("{:?}", t), "BigTuple(CustomType { _value: 42 })");
+    }
+
+    #[test]
+    fn test_hash_empty() {
+        let t = BigTuple(());
+        let mut hasher = DefaultHasher::new();
+        t.hash(&mut hasher);
+        let hash1 = hasher.finish();
+
+        let mut hasher2 = DefaultHasher::new();
+        BigTuple(()).hash(&mut hasher2);
+        let hash2 = hasher2.finish();
+
+        assert_eq!(hash1, hash2);
+    }
+
+    #[test]
+    fn test_hash_single_element() {
+        let t1 = BigTuple((1,));
+        let t2 = BigTuple((1,));
+        let t3 = BigTuple((2,));
+
+        let mut hasher1 = DefaultHasher::new();
+        t1.hash(&mut hasher1);
+        let hash1 = hasher1.finish();
+
+        let mut hasher2 = DefaultHasher::new();
+        t2.hash(&mut hasher2);
+        let hash2 = hasher2.finish();
+
+        let mut hasher3 = DefaultHasher::new();
+        t3.hash(&mut hasher3);
+        let hash3 = hasher3.finish();
+
+        assert_eq!(hash1, hash2);
+        assert_ne!(hash1, hash3);
+    }
+
+    #[test]
+    fn test_hash_multiple_elements() {
+        let t1 = BigTuple((1, "hello"));
+        let t2 = BigTuple((1, "hello"));
+        let t3 = BigTuple((2, "world"));
+
+        let mut hasher1 = DefaultHasher::new();
+        t1.hash(&mut hasher1);
+        let hash1 = hasher1.finish();
+
+        let mut hasher2 = DefaultHasher::new();
+        t2.hash(&mut hasher2);
+        let hash2 = hasher2.finish();
+
+        let mut hasher3 = DefaultHasher::new();
+        t3.hash(&mut hasher3);
+        let hash3 = hasher3.finish();
+
+        assert_eq!(hash1, hash2);
+        assert_ne!(hash1, hash3);
+    }
+
+    #[test]
+    fn test_hash_large_tuple() {
+        let t1 = BigTuple((1, 2, 3, 4, 5, 6, 7, 8));
+        let t2 = BigTuple((1, 2, 3, 4, 5, 6, 7, 8));
+        let t3 = BigTuple((8, 7, 6, 5, 4, 3, 2, 1));
+
+        let mut hasher1 = DefaultHasher::new();
+        t1.hash(&mut hasher1);
+        let hash1 = hasher1.finish();
+
+        let mut hasher2 = DefaultHasher::new();
+        t2.hash(&mut hasher2);
+        let hash2 = hasher2.finish();
+
+        let mut hasher3 = DefaultHasher::new();
+        t3.hash(&mut hasher3);
+        let hash3 = hasher3.finish();
+
+        assert_eq!(hash1, hash2);
+        assert_ne!(hash1, hash3);
+    }
+
+    #[test]
+    fn test_hash_nested_big_tuple() {
+        let t1 = BigTuple((BigTuple((1, 2)), "nested"));
+        let t2 = BigTuple((BigTuple((1, 2)), "nested"));
+        let t3 = BigTuple((BigTuple((2, 1)), "nested"));
+
+        let mut hasher1 = DefaultHasher::new();
+        t1.hash(&mut hasher1);
+        let hash1 = hasher1.finish();
+
+        let mut hasher2 = DefaultHasher::new();
+        t2.hash(&mut hasher2);
+        let hash2 = hasher2.finish();
+
+        let mut hasher3 = DefaultHasher::new();
+        t3.hash(&mut hasher3);
+        let hash3 = hasher3.finish();
+
+        assert_eq!(hash1, hash2);
+        assert_ne!(hash1, hash3);
+    }
+}
