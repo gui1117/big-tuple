@@ -1,0 +1,15 @@
+[package]
+name = "big-tuple"
+version = "0.1.0"
+edition = "2021"
+authors = ["Guillaume Thiolliere <gui17111711@gmail.com>"]
+description = "A Rust library providing trait implementations for tuples of up to 128 elements."
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/gui1117/big-tuple"
+documentation = "https://docs.rs/big-tuple"
+homepage = "https://github.com/gui1117/big-tuple"
+keywords = ["tuple", "traits"]
+categories = ["data-structures"]
+
+[dependencies]
