@@ -1,4 +1,4 @@
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 
 /// A wrapper of tuple that implement `PartialEq`, `Eq`, `PartialOrd`, `Ord`, `Debug`, `Default`,
 /// `Hash` for tuple of up to 128 elements.
